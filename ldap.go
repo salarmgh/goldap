@@ -10,17 +10,17 @@ import (
 type LDAP struct {
 	connection *ldap.Conn
 	baseDN     string
-	usersCN    string
+	usersDN    string
 }
 
 // GetUsersDN function
 func (l *LDAP) GetUsersDN() string {
-	return fmt.Sprintf("%s,%s", l.usersCN, l.baseDN)
+	return fmt.Sprintf("%s,%s", l.usersDN, l.baseDN)
 }
 
 // Init function
-func (l *LDAP) Init(bindDN string, usersDN string) {
-	l.bindDN = bindDN
+func (l *LDAP) Init(baseDN string, usersDN string) {
+	l.baseDN = baseDN
 	l.usersDN = usersDN
 }
 
@@ -35,4 +35,5 @@ func (l *LDAP) GetConn(ldapURL string, bindUser string, bindPass string) error {
 		return err
 	}
 	l.connection = ldapConn
+	return nil
 }

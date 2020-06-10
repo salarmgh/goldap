@@ -8,7 +8,7 @@ import (
 
 // AddGroup function
 func (l *LDAP) AddGroup(name string) error {
-	groupDN = fmt.Sprintf("CN=%s,%s", name, l.baseDN)
+	groupDN := fmt.Sprintf("CN=%s,%s", name, l.baseDN)
 	addReq := ldap.NewAddRequest(groupDN, []ldap.Control{})
 	var attrs []ldap.Attribute
 	attr := ldap.Attribute{
@@ -31,72 +31,74 @@ func (l *LDAP) AddGroup(name string) error {
 
 	addReq.Attributes = attrs
 
-	if err := l.Add(addReq); err != nil {
+	if err := l.connection.Add(addReq); err != nil {
 		return err
 	}
+	return nil
 }
 
 // AddUserToGroup function
 func (l *LDAP) AddUserToGroup(user string, group string) error {
 	userDN := fmt.Sprintf("CN=%s,%s", user, l.GetUsersDN())
-	groupDN = fmt.Sprintf("CN=%s,%s", group, l.baseDN)
-	modify = ldap.NewModifyRequest(userDN, []ldap.Control{})
+	groupDN := fmt.Sprintf("CN=%s,%s", group, l.baseDN)
+	modify := ldap.NewModifyRequest(userDN, []ldap.Control{})
 	modify.Add("memberOf", []string{groupDN})
 
-	err = l.Modify(modify)
+	err := l.connection.Modify(modify)
 	if err != nil {
 		return err
 	}
 
-	modify := ldap.NewModifyRequest(groupDN, []ldap.Control{})
+	modify = ldap.NewModifyRequest(groupDN, []ldap.Control{})
 	modify.Add("member", []string{userDN})
 
-	err = l.Modify(modify)
+	err = l.connection.Modify(modify)
 	if err != nil {
 		return err
 	}
+	return nil
 }
 
 // DelUserGroup function
 func (l *LDAP) DelUserGroup(user string, group string) error {
 	userDN := fmt.Sprintf("CN=%s,%s", user, l.GetUsersDN())
-	groupDN = fmt.Sprintf("CN=%s,%s", group, l.baseDN)
-	modify = ldap.NewModifyRequest(userDN, []ldap.Control{})
+	groupDN := fmt.Sprintf("CN=%s,%s", group, l.baseDN)
+	modify := ldap.NewModifyRequest(userDN, []ldap.Control{})
 	modify.Delete("memberOf", []string{groupDN})
 
-	err = l.Modify(modify)
+	err := l.connection.Modify(modify)
 	if err != nil {
 		return err
 	}
 
-	modify := ldap.NewModifyRequest(groupDN, []ldap.Control{})
+	modify = ldap.NewModifyRequest(groupDN, []ldap.Control{})
 	modify.Delete("member", []string{userDN})
 
-	err = l.Modify(modify)
+	err = l.connection.Modify(modify)
 	if err != nil {
 		return err
 	}
+	return nil
 }
 
 // MemberOf function
 func (l *LDAP) MemberOf(group string) ([]string, error) {
-	userDN := fmt.Sprintf("CN=%s,%s", user, l.GetUsersDN())
-	groupDN = fmt.Sprintf("CN=%s,%s", group, l.baseDN)
+	groupDN := fmt.Sprintf("CN=%s,%s", group, l.baseDN)
 	searchReq := ldap.NewSearchRequest(
 		l.baseDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf("(&(objectClass=person)(memberof=CN=%s,%s))", group, l.baseDN),
+		fmt.Sprintf("(&(objectClass=person)(memberof=%s))", groupDN),
 		[]string{"cn"},
 		[]ldap.Control{})
 
-	result, err := l.Search(searchReq)
+	result, err := l.connection.Search(searchReq)
 	if err != nil {
 		return nil, err
 	}
 
 	var users []string
 	for _, entry := range result.Entries {
-		append(users, entry.GetAttributeValue("cn"))
+		users = append(users, entry.GetAttributeValue("cn"))
 	}
 
 	return users, nil
@@ -111,9 +113,9 @@ func (l *LDAP) UserMemberOf(user string, group string) (bool, error) {
 		[]string{"cn"},
 		[]ldap.Control{})
 
-	result, err := l.Search(searchReq)
+	result, err := l.connection.Search(searchReq)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
 	if result.Entries[0].GetAttributeValue("cn") == group {
