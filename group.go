@@ -12,20 +12,19 @@ func (l *LDAP) AddGroup(name string) error {
 	addReq := ldap.NewAddRequest(groupDN, []ldap.Control{})
 	var attrs []ldap.Attribute
 	attr := ldap.Attribute{
+		Type: "member",
+		Vals: []string{""},
+	}
+	attrs = append(attrs, attr)
+	attr = ldap.Attribute{
 		Type: "objectClass",
-		Vals: []string{"top", "groupOfUniqueNames"},
+		Vals: []string{"top", "groupOfNames"},
 	}
 	attrs = append(attrs, attr)
 
 	attr = ldap.Attribute{
 		Type: "cn",
 		Vals: []string{name},
-	}
-	attrs = append(attrs, attr)
-
-	attr = ldap.Attribute{
-		Type: "uniqueMember",
-		Vals: []string{""},
 	}
 	attrs = append(attrs, attr)
 
@@ -39,8 +38,8 @@ func (l *LDAP) AddGroup(name string) error {
 
 // AddUserToGroup function
 func (l *LDAP) AddUserToGroup(user string, group string) error {
-	userDN := fmt.Sprintf("CN=%s,%s", user, l.GetUsersDN())
-	groupDN := fmt.Sprintf("CN=%s,%s", group, l.baseDN)
+	userDN := fmt.Sprintf("cn=%s,%s", user, l.usersDN)
+	groupDN := fmt.Sprintf("cn=%s,%s", group, l.baseDN)
 	modify := ldap.NewModifyRequest(userDN, []ldap.Control{})
 	modify.Add("memberOf", []string{groupDN})
 
@@ -61,7 +60,7 @@ func (l *LDAP) AddUserToGroup(user string, group string) error {
 
 // DelUserGroup function
 func (l *LDAP) DelUserGroup(user string, group string) error {
-	userDN := fmt.Sprintf("CN=%s,%s", user, l.GetUsersDN())
+	userDN := fmt.Sprintf("CN=%s,%s", user, l.usersDN)
 	groupDN := fmt.Sprintf("CN=%s,%s", group, l.baseDN)
 	modify := ldap.NewModifyRequest(userDN, []ldap.Control{})
 	modify.Delete("memberOf", []string{groupDN})

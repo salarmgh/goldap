@@ -1,8 +1,6 @@
 package goldap
 
 import (
-	"fmt"
-
 	"github.com/go-ldap/ldap/v3"
 )
 
@@ -11,11 +9,6 @@ type LDAP struct {
 	connection *ldap.Conn
 	baseDN     string
 	usersDN    string
-}
-
-// GetUsersDN function
-func (l *LDAP) GetUsersDN() string {
-	return fmt.Sprintf("%s,%s", l.usersDN, l.baseDN)
 }
 
 // Init function

@@ -10,7 +10,7 @@ import (
 // AddUser function
 func (l *LDAP) AddUser(name string, password string) error {
 	uid := guuid.New().String()
-	userDN := fmt.Sprintf("CN=%s,%s", name, l.GetUsersDN())
+	userDN := fmt.Sprintf("CN=%s,%s", name, l.usersDN)
 
 	addReq := ldap.NewAddRequest(userDN, []ldap.Control{})
 	var attrs []ldap.Attribute
