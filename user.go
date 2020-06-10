@@ -6,8 +6,9 @@ import (
 	"github.com/go-ldap/ldap"
 )
 
+// AddUser function
 func (l *LDAP) AddUser(name string, password string) error {
-	userDN := fmt.Sprintf("CN=%s,CN=people,DC=digiops,DC=com", name)
+	userDN := fmt.Sprintf("CN=%s,%s", name, l.GetUsersDN())
 	addReq := ldap.NewAddRequest(userDN, []ldap.Control{})
 	addReq.Attribute("objectClass", []string{"top", "person", "uidObject", "simpleSecurityObject"})
 	addReq.Attribute("cn", []string{name})

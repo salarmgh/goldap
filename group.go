@@ -8,7 +8,7 @@ import (
 
 // AddGroup function
 func (l *LDAP) AddGroup(name string) error {
-	gropDN = fmt.Sprintf("CN=%s,DC=digiops,DC=com", name)
+	groupDN = fmt.Sprintf("CN=%s,%s", name, l.baseDN)
 	addReq := ldap.NewAddRequest(groupDN, []ldap.Control{})
 	var attrs []ldap.Attribute
 	attr := ldap.Attribute{
@@ -37,7 +37,9 @@ func (l *LDAP) AddGroup(name string) error {
 }
 
 // AddUserToGroup function
-func (l *LDAP) AddUserToGroup(userDN string, groupDN string) error {
+func (l *LDAP) AddUserToGroup(user string, group string) error {
+	userDN := fmt.Sprintf("CN=%s,%s", user, l.GetUsersDN())
+	groupDN = fmt.Sprintf("CN=%s,%s", group, l.baseDN)
 	modify = ldap.NewModifyRequest(userDN, []ldap.Control{})
 	modify.Add("memberOf", []string{groupDN})
 
@@ -56,7 +58,9 @@ func (l *LDAP) AddUserToGroup(userDN string, groupDN string) error {
 }
 
 // DelUserGroup function
-func (l *LDAP) DelUserGroup(userDN string, groupDN string) error {
+func (l *LDAP) DelUserGroup(user string, group string) error {
+	userDN := fmt.Sprintf("CN=%s,%s", user, l.GetUsersDN())
+	groupDN = fmt.Sprintf("CN=%s,%s", group, l.baseDN)
 	modify = ldap.NewModifyRequest(userDN, []ldap.Control{})
 	modify.Delete("memberOf", []string{groupDN})
 
@@ -76,10 +80,12 @@ func (l *LDAP) DelUserGroup(userDN string, groupDN string) error {
 
 // MemberOf function
 func (l *LDAP) MemberOf(group string) ([]string, error) {
+	userDN := fmt.Sprintf("CN=%s,%s", user, l.GetUsersDN())
+	groupDN = fmt.Sprintf("CN=%s,%s", group, l.baseDN)
 	searchReq := ldap.NewSearchRequest(
-		"dc=digiops,dc=com",
+		l.baseDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf("(&(objectClass=person)(memberof=CN=%s,DC=digiops,DC=com))", group),
+		fmt.Sprintf("(&(objectClass=person)(memberof=CN=%s,%s))", group, l.baseDN),
 		[]string{"cn"},
 		[]ldap.Control{})
 
@@ -99,9 +105,9 @@ func (l *LDAP) MemberOf(group string) ([]string, error) {
 // UserMemberOf function
 func (l *LDAP) UserMemberOf(user string, group string) (bool, error) {
 	searchReq := ldap.NewSearchRequest(
-		"dc=digiops,dc=com",
+		l.baseDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf("(&(objectClass=groupOfNames)(member=CN=%s,CN=folan,DC=digiops,DC=com))", group),
+		fmt.Sprintf("(&(objectClass=groupOfNames)(member=CN=%s,CN=%s,%s))", user, group, l.baseDN),
 		[]string{"cn"},
 		[]ldap.Control{})
 
