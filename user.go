@@ -51,3 +51,41 @@ func (l *LDAP) AddUser(name string, password string) error {
 	}
 	return nil
 }
+
+// Auth function
+func (l *LDAP) Auth(loginUser string, loginPass string) (bool, error) {
+	result, err := l.connection.Search(ldap.NewSearchRequest(
+		l.baseDN,
+		ldap.ScopeWholeSubtree,
+		ldap.NeverDerefAliases,
+		0,
+		0,
+		false,
+		fmt.Sprintf("(&(objectClass=person)(cn=%s))", loginUser),
+		[]string{"cn"},
+		nil,
+	))
+	fmt.Println(fmt.Sprintf("(&(objectClass=person)(cn=%s))", loginUser))
+
+	if err != nil {
+		return false, fmt.Errorf("Failed to find user. %s", err)
+	}
+
+	if len(result.Entries) < 1 {
+		return false, fmt.Errorf("User does not exist")
+	}
+
+	if len(result.Entries) > 1 {
+		return false, fmt.Errorf("Too many entries returned")
+	}
+
+	conn, err := l.NewConn("ldap://localhost:389")
+	if err != nil {
+		return false, err
+	}
+	defer conn.Close()
+	if err := conn.Bind(result.Entries[0].DN, loginPass); err != nil {
+		return false, fmt.Errorf("Failed to auth. %s", err)
+	}
+	return true, nil
+}

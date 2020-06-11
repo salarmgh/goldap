@@ -30,3 +30,12 @@ func (l *LDAP) GetConn(ldapURL string, bindUser string, bindPass string) error {
 	l.connection = ldapConn
 	return nil
 }
+
+// NewConn function
+func (l *LDAP) NewConn(ldapURL string) (*ldap.Conn, error) {
+	ldapConn, err := ldap.DialURL(ldapURL)
+	if err != nil {
+		return nil, err
+	}
+	return ldapConn, nil
+}
