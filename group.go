@@ -141,7 +141,7 @@ func (l *LDAP) Groups() ([]string, error) {
 
 	var groups []string
 	for _, entry := range result.Entries {
-		groups = append(users, entry.GetAttributeValue("cn"))
+		groups = append(groups, entry.GetAttributeValue("cn"))
 	}
 
 	return groups, nil
