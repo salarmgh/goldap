@@ -107,7 +107,7 @@ func (l *LDAP) Users() (*[]BasicUser, error) {
 		l.baseDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		"(objectClass=inetOrgPerson)",
-		[]string{"cn"},
+		[]string{"cn", "mail", "memberOf"},
 		[]ldap.Control{})
 
 	result, err := l.connection.Search(searchReq)
