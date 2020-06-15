@@ -120,7 +120,7 @@ func (l *LDAP) Users() (*[]BasicUser, error) {
 	for _, entry := range result.Entries {
 		var groups []string
 		for _, group := range entry.GetAttributeValues("memberOf") {
-			groups = append(groups, strings.Split(group, "=")[0])
+			groups = append(groups, string.Split(strings.Split(group, "=")[1], ",")[0])
 		}
 		users = append(users,
 			BasicUser{
