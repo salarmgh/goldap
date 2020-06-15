@@ -125,3 +125,24 @@ func (l *LDAP) UserMemberOf(user string, group string) (bool, error) {
 
 	return false, nil
 }
+
+func (l *LDAP) Groups() ([]string, error) {
+	searchReq := ldap.NewSearchRequest(
+		l.baseDN,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		"(objectClass=groupOfNames)",
+		[]string{"cn"},
+		[]ldap.Control{})
+
+	result, err := l.connection.Search(searchReq)
+	if err != nil {
+		return nil, err
+	}
+
+	var groups []string
+	for _, entry := range result.Entries {
+		groups = append(users, entry.GetAttributeValue("cn"))
+	}
+
+	return groups, nil
+}
