@@ -16,7 +16,7 @@ func (l *LDAP) AddUser(name string, email string, password string) error {
 	var attrs []ldap.Attribute
 	attr := ldap.Attribute{
 		Type: "objectClass",
-		Vals: []string{"top", "person", "uidObject", "simpleSecurityObject"},
+		Vals: []string{"top", "account", "person", "simpleSecurityObject"},
 	}
 	attrs = append(attrs, attr)
 
