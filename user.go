@@ -126,7 +126,7 @@ func (l *LDAP) Users() (*[]BasicUser, error) {
 			BasicUser{
 				Username: entry.GetAttributeValue("cn"),
 				Email:    entry.GetAttributeValue("mail"),
-				Groups:   entry.GetAttributeValues("memberOf"),
+				Groups:   groups,
 			},
 		)
 	}
