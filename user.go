@@ -8,7 +8,7 @@ import (
 )
 
 // AddUser function
-func (l *LDAP) AddUser(name string, password string) error {
+func (l *LDAP) AddUser(name string, email string, password string) error {
 	uid := guuid.New().String()
 	userDN := fmt.Sprintf("CN=%s,%s", name, l.usersDN)
 
@@ -41,6 +41,12 @@ func (l *LDAP) AddUser(name string, password string) error {
 	attr = ldap.Attribute{
 		Type: "userPassword",
 		Vals: []string{password},
+	}
+	attrs = append(attrs, attr)
+
+	attr = ldap.Attribute{
+		Type: "email",
+		Vals: []string{email},
 	}
 	attrs = append(attrs, attr)
 
