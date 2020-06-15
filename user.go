@@ -2,6 +2,7 @@ package goldap
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/go-ldap/ldap/v3"
 	guuid "github.com/google/uuid"
@@ -117,6 +118,10 @@ func (l *LDAP) Users() (*[]BasicUser, error) {
 
 	var users []BasicUser
 	for _, entry := range result.Entries {
+		var groups []string
+		for group := range entry.GetAttributeValues("memberOf") {
+			groups = append(groups, strings.Split(group, "=")[0])
+		}
 		users = append(users,
 			BasicUser{
 				Username: entry.GetAttributeValue("cn"),
