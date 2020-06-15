@@ -86,7 +86,7 @@ func (l *LDAP) MemberOf(group string) ([]string, error) {
 	searchReq := ldap.NewSearchRequest(
 		l.baseDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf("(&(objectClass=person)(memberof=%s))", groupDN),
+		fmt.Sprintf("(&(objectClass=inetOrgPerson)(memberof=%s))", groupDN),
 		[]string{"cn"},
 		[]ldap.Control{})
 

@@ -67,11 +67,11 @@ func (l *LDAP) Auth(loginUser string, loginPass string) (bool, error) {
 		0,
 		0,
 		false,
-		fmt.Sprintf("(&(objectClass=person)(cn=%s))", loginUser),
+		fmt.Sprintf("(&(objectClass=inetOrgPerson)(cn=%s))", loginUser),
 		[]string{"cn"},
 		nil,
 	))
-	fmt.Println(fmt.Sprintf("(&(objectClass=person)(cn=%s))", loginUser))
+	fmt.Println(fmt.Sprintf("(&(objectClass=inetOrgPerson)(cn=%s))", loginUser))
 
 	if err != nil {
 		return false, fmt.Errorf("Failed to find user. %s", err)
