@@ -102,7 +102,7 @@ func (l *LDAP) Auth(loginUser string, loginPass string) (bool, error) {
 	return true, nil
 }
 
-func (l *LDAP) Users() (*BasicUser, error) {
+func (l *LDAP) Users() (*[]BasicUser, error) {
 	searchReq := ldap.NewSearchRequest(
 		l.baseDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
@@ -119,9 +119,9 @@ func (l *LDAP) Users() (*BasicUser, error) {
 	for _, entry := range result.Entries {
 		users = append(users,
 			BasicUser{
-				username: entry.GetAttributeValue("cn"),
-				email:    entry.GetAttributeValue("mail"),
-				groups:   entry.GetAttributeValues("memberOf"),
+				Username: entry.GetAttributeValue("cn"),
+				Email:    entry.GetAttributeValue("mail"),
+				Groups:   entry.GetAttributeValues("memberOf"),
 			},
 		)
 	}
