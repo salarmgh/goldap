@@ -7,7 +7,7 @@ import (
 	guuid "github.com/google/uuid"
 )
 
-type User struct {
+type BasicUser struct {
 	Username string
 	Email    string
 	Groups   []string
@@ -102,7 +102,7 @@ func (l *LDAP) Auth(loginUser string, loginPass string) (bool, error) {
 	return true, nil
 }
 
-func (l *LDAP) Users() (*User, error) {
+func (l *LDAP) Users() (*BasicUser, error) {
 	searchReq := ldap.NewSearchRequest(
 		l.baseDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
@@ -115,10 +115,10 @@ func (l *LDAP) Users() (*User, error) {
 		return nil, err
 	}
 
-	var users []Users
+	var users []BasicUser
 	for _, entry := range result.Entries {
 		users = append(users,
-			Users{
+			BasicUser{
 				username: entry.GetAttributeValue("cn"),
 				email:    entry.GetAttributeValue("mail"),
 				groups:   entry.GetAttributeValues("memberOf"),
@@ -126,5 +126,5 @@ func (l *LDAP) Users() (*User, error) {
 		)
 	}
 
-	return users, nil
+	return &users, nil
 }
