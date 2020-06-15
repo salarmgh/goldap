@@ -7,6 +7,12 @@ import (
 	guuid "github.com/google/uuid"
 )
 
+type User struct {
+	Username string
+	Email    string
+	Groups   []string
+}
+
 // AddUser function
 func (l *LDAP) AddUser(name string, email string, password string) error {
 	uid := guuid.New().String()
@@ -94,4 +100,31 @@ func (l *LDAP) Auth(loginUser string, loginPass string) (bool, error) {
 		return false, fmt.Errorf("Failed to auth. %s", err)
 	}
 	return true, nil
+}
+
+func (l *LDAP) Users() (*User, error) {
+	searchReq := ldap.NewSearchRequest(
+		l.baseDN,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		"(objectClass=inetOrgPerson)",
+		[]string{"cn"},
+		[]ldap.Control{})
+
+	result, err := l.connection.Search(searchReq)
+	if err != nil {
+		return nil, err
+	}
+
+	var users []Users
+	for _, entry := range result.Entries {
+		users = append(users,
+			Users{
+				username: entry.GetAttributeValue("cn"),
+				email:    entry.GetAttributeValue("mail"),
+				groups:   entry.GetAttributeValues("memberOf"),
+			},
+		)
+	}
+
+	return users, nil
 }
