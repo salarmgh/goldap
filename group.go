@@ -146,3 +146,22 @@ func (l *LDAP) Groups() ([]string, error) {
 
 	return groups, nil
 }
+
+func (l *LDAP) GroupExists(groupName string) (bool, error) {
+	searchReq := ldap.NewSearchRequest(
+		l.baseDN,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(&(objectClass=groupOfNames)(cn=%s))", groupName),
+		[]string{"cn"},
+		[]ldap.Control{})
+
+	result, err := l.connection.Search(searchReq)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(result.Entries != 0) {
+		return true, nil
+	}
+	return false, nil
+}
