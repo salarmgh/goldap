@@ -30,7 +30,7 @@ func (l *LDAP) GetConn(ldapURL string, bindUser string, bindPass string) error {
 		return err
 	}
 	l.connection = ldapConn
-	usersDNExists, err := l.GroupExists(l.usersDn)
+	usersDNExists, err := l.GroupExists(l.usersDN)
 	if err != nil {
 		return err
 	}

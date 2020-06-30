@@ -157,10 +157,10 @@ func (l *LDAP) GroupExists(groupName string) (bool, error) {
 
 	result, err := l.connection.Search(searchReq)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
-	if len(result.Entries != 0) {
+	if len(result.Entries) != 0 {
 		return true, nil
 	}
 	return false, nil
