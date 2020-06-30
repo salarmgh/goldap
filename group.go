@@ -24,7 +24,7 @@ func (l *LDAP) AddGroup(name string) error {
 
 	attr = ldap.Attribute{
 		Type: "cn",
-		Vals: []string{name},
+		Vals: []string{groupDN},
 	}
 	attrs = append(attrs, attr)
 
