@@ -2,6 +2,7 @@ package goldap
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/go-ldap/ldap/v3"
 )
@@ -141,7 +142,7 @@ func (l *LDAP) Groups() ([]string, error) {
 
 	var groups []string
 	for _, entry := range result.Entries {
-		groups = append(groups, entry.GetAttributeValue("cn"))
+		groups = append(groups, string.Split(strings.Split(entry.GetAttributeValue("cn"), ",")[0], "=")[1])
 	}
 
 	return groups, nil
