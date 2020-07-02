@@ -97,7 +97,7 @@ func (l *LDAP) UserGroups(user string) ([]string, error) {
 
 	var groups []string
 	for _, entry := range result.Entries {
-		groups = append(groups, entry.GetAttributeValue("cn"))
+		groups = append(groups, string.Split(strings.Split(entry.GetAttributeValue("cn"), ",")[0], "=")[1])
 	}
 
 	return groups, nil
