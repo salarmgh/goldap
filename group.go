@@ -188,3 +188,16 @@ func (l *LDAP) GroupExists(groupName string) (bool, error) {
 	}
 	return false, nil
 }
+
+// DelGroup function
+func (l *LDAP) DelGroup(name string) error {
+	groupDN := fmt.Sprintf("CN=%s,%s", name, l.baseDN)
+	deleteGroup := ldap.NewDelRequest(groupDN, []ldap.Control{})
+	err := l.connection.Del(deleteGroup)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
