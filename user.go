@@ -14,6 +14,19 @@ type BasicUser struct {
 	Groups   []string
 }
 
+// DelUser function
+func (l *LDAP) DelUser(user string) error {
+	userDN := fmt.Sprintf("CN=%s,%s", user, l.usersDN)
+	deleteUser := ldap.NewDelRequest(userDN, []ldap.Control{})
+	l.connection.Delete(deleteUser)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // AddUser function
 func (l *LDAP) AddUser(name string, email string, password string) error {
 	uid := guuid.New().String()
