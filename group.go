@@ -81,6 +81,28 @@ func (l *LDAP) DelUserGroup(user string, group string) error {
 	return nil
 }
 
+func (l *LDAP) UserGroups(user string) ([]string, error) {
+	userDN := fmt.Sprintf("cn=%s,%s", user, l.usersDN)
+	searchReq := ldap.NewSearchRequest(
+		l.baseDN,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(&(objectClass=groupOfNames)(member=%s))", userDN),
+		[]string{"cn"},
+		[]ldap.Control{})
+
+	result, err := l.connection.Search(searchReq)
+	if err != nil {
+		return nil, err
+	}
+
+	var groups []string
+	for _, entry := range result.Entries {
+		gourps = append(groups, entry.GetAttributeValue("cn"))
+	}
+
+	return groups, nil
+}
+
 // MemberOf function
 func (l *LDAP) MemberOf(group string) ([]string, error) {
 	groupDN := fmt.Sprintf("CN=%s,%s", group, l.baseDN)
