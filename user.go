@@ -18,7 +18,7 @@ type BasicUser struct {
 func (l *LDAP) DelUser(user string) error {
 	userDN := fmt.Sprintf("CN=%s,%s", user, l.usersDN)
 	deleteUser := ldap.NewDelRequest(userDN, []ldap.Control{})
-	l.connection.Delete(deleteUser)
+	err := l.connection.Del(deleteUser)
 
 	if err != nil {
 		return err
