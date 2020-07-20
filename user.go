@@ -167,7 +167,7 @@ func (l *LDAP) UserExists(user string) (bool, error) {
 	}
 
 	if len(result.Entries) < 1 {
-		return false, fmt.Errorf("User does not exist")
+		return false, nil
 	}
 
 	if len(result.Entries) > 1 {
