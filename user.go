@@ -146,3 +146,33 @@ func (l *LDAP) Users() (*[]BasicUser, error) {
 
 	return &users, nil
 }
+
+// User exists function
+func (l *LDAP) UserExists(user string) (bool, error) {
+	result, err := l.connection.Search(ldap.NewSearchRequest(
+		l.usersDN,
+		ldap.ScopeWholeSubtree,
+		ldap.NeverDerefAliases,
+		0,
+		0,
+		false,
+		fmt.Sprintf("(&(objectClass=inetOrgPerson)(cn=%s))", user),
+		[]string{"cn"},
+		nil,
+	))
+	fmt.Println(fmt.Sprintf("(&(objectClass=inetOrgPerson)(cn=%s))", user))
+
+	if err != nil {
+		return false, fmt.Errorf("Failed to find user. %s", err)
+	}
+
+	if len(result.Entries) < 1 {
+		return false, fmt.Errorf("User does not exist")
+	}
+
+	if len(result.Entries) > 1 {
+		return false, fmt.Errorf("Too many entries returned")
+	}
+
+	return true, nil
+}
