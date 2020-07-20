@@ -9,7 +9,7 @@ import (
 
 // AddGroup function
 func (l *LDAP) AddGroup(name string) error {
-	groupDN := fmt.Sprintf("CN=%s,%s", name, l.baseDN)
+	groupDN := fmt.Sprintf("CN=%s,%s", name, l.groupsDN)
 	addReq := ldap.NewAddRequest(groupDN, []ldap.Control{})
 	var attrs []ldap.Attribute
 	attr := ldap.Attribute{
@@ -40,7 +40,7 @@ func (l *LDAP) AddGroup(name string) error {
 // AddUserToGroup function
 func (l *LDAP) AddUserToGroup(user string, group string) error {
 	userDN := fmt.Sprintf("cn=%s,%s", user, l.usersDN)
-	groupDN := fmt.Sprintf("cn=%s,%s", group, l.baseDN)
+	groupDN := fmt.Sprintf("cn=%s,%s", group, l.groupsDN)
 	modify := ldap.NewModifyRequest(userDN, []ldap.Control{})
 	modify.Add("memberOf", []string{groupDN})
 
@@ -62,7 +62,7 @@ func (l *LDAP) AddUserToGroup(user string, group string) error {
 // DelUserGroup function
 func (l *LDAP) DelUserGroup(user string, group string) error {
 	userDN := fmt.Sprintf("CN=%s,%s", user, l.usersDN)
-	groupDN := fmt.Sprintf("CN=%s,%s", group, l.baseDN)
+	groupDN := fmt.Sprintf("CN=%s,%s", group, l.groupsDN)
 	modify := ldap.NewModifyRequest(userDN, []ldap.Control{})
 	modify.Delete("memberOf", []string{groupDN})
 
@@ -84,7 +84,7 @@ func (l *LDAP) DelUserGroup(user string, group string) error {
 func (l *LDAP) UserGroups(user string) ([]string, error) {
 	userDN := fmt.Sprintf("cn=%s,%s", user, l.usersDN)
 	searchReq := ldap.NewSearchRequest(
-		l.baseDN,
+		l.groupsDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=groupOfNames)(member=%s))", userDN),
 		[]string{"cn"},
@@ -105,9 +105,9 @@ func (l *LDAP) UserGroups(user string) ([]string, error) {
 
 // MemberOf function
 func (l *LDAP) MemberOf(group string) ([]string, error) {
-	groupDN := fmt.Sprintf("CN=%s,%s", group, l.baseDN)
+	groupDN := fmt.Sprintf("CN=%s,%s", group, l.groupsDN)
 	searchReq := ldap.NewSearchRequest(
-		l.baseDN,
+		l.usersDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=inetOrgPerson)(memberof=%s))", groupDN),
 		[]string{"cn"},
@@ -129,7 +129,7 @@ func (l *LDAP) MemberOf(group string) ([]string, error) {
 // UserMemberOf function
 func (l *LDAP) UserMemberOf(user string, group string) (bool, error) {
 	searchReq := ldap.NewSearchRequest(
-		l.baseDN,
+		l.groupsDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=groupOfNames)(member=CN=%s,%s)(cn=%s))", user, l.usersDN, group),
 		[]string{"cn"},
@@ -151,7 +151,7 @@ func (l *LDAP) UserMemberOf(user string, group string) (bool, error) {
 
 func (l *LDAP) Groups() ([]string, error) {
 	searchReq := ldap.NewSearchRequest(
-		l.baseDN,
+		l.groupsDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		"(objectClass=groupOfNames)",
 		[]string{"cn"},
@@ -191,7 +191,7 @@ func (l *LDAP) GroupExists(groupName string) (bool, error) {
 
 // DelGroup function
 func (l *LDAP) DelGroup(name string) error {
-	groupDN := fmt.Sprintf("CN=%s,%s", name, l.baseDN)
+	groupDN := fmt.Sprintf("CN=%s,%s", name, l.groupsDN)
 	deleteGroup := ldap.NewDelRequest(groupDN, []ldap.Control{})
 	err := l.connection.Del(deleteGroup)
 
