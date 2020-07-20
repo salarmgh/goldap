@@ -11,12 +11,14 @@ type LDAP struct {
 	connection *ldap.Conn
 	baseDN     string
 	usersDN    string
+	groupsDN   string
 }
 
 // Init function
-func (l *LDAP) Init(baseDN string, usersDN string) {
+func (l *LDAP) Init(baseDN string, usersDN string, groupsDN string) {
 	l.baseDN = baseDN
 	l.usersDN = usersDN
+	l.groupsDN = groupsDN
 }
 
 // GetConn function
@@ -40,6 +42,17 @@ func (l *LDAP) GetConn(ldapURL string, bindUser string, bindPass string) error {
 			return err
 		}
 	}
+	groupsDNExists, err := l.GroupExists(l.groupsDN)
+	if err != nil {
+		return err
+	}
+	if !groupsDNExists {
+		err = l.AddGroup(strings.Split(strings.Split(l.groupsDN, ",")[0], "=")[1])
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
