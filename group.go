@@ -141,7 +141,7 @@ func (l *LDAP) UserMemberOf(user string, group string) (bool, error) {
 	}
 
 	if len(result.Entries) > 0 {
-		if result.Entries[0].GetAttributeValue("cn") == group {
+		if strings.Split(strings.Split(result.Entries[0].GetAttributeValue("cn"), ",")[0], "=")[1] == group {
 			return true, nil
 		}
 	}
