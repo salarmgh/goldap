@@ -129,7 +129,7 @@ func (l *LDAP) MemberOf(group string) ([]string, error) {
 // UserMemberOf function
 func (l *LDAP) UserMemberOf(user string, group string) (bool, error) {
 	searchReq := ldap.NewSearchRequest(
-		l.groupsDN,
+		l.baseDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=groupOfNames)(member=CN=%s,%s)(cn=%s))", user, l.usersDN, group),
 		[]string{"cn"},
