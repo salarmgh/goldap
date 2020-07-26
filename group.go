@@ -2,6 +2,7 @@ package goldap
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/go-ldap/ldap/v3"
@@ -10,6 +11,7 @@ import (
 // AddGroup function
 func (l *LDAP) AddGroup(name string) error {
 	groupDN := fmt.Sprintf("CN=%s,%s", name, l.groupsDN)
+	log.Println(groupDN)
 	addReq := ldap.NewAddRequest(groupDN, []ldap.Control{})
 	var attrs []ldap.Attribute
 	attr := ldap.Attribute{
