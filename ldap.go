@@ -42,7 +42,7 @@ func (l *LDAP) GetConn(ldapURL string, bindUser string, bindPass string) error {
 	log.Println("Third")
 	if !usersDNExists {
 		log.Println(strings.Split(strings.Split(l.usersDN, ",")[0], "=")[1])
-		err = l.AddGroup(strings.Split(strings.Split(l.usersDN, ",")[0], "=")[1])
+		err = l.AddBaseGroup(strings.Split(strings.Split(l.usersDN, ",")[0], "=")[1])
 		if err != nil {
 			return err
 		}
@@ -54,7 +54,7 @@ func (l *LDAP) GetConn(ldapURL string, bindUser string, bindPass string) error {
 	}
 	log.Println("Forth")
 	if !groupsDNExists {
-		err = l.AddGroup(strings.Split(strings.Split(l.groupsDN, ",")[0], "=")[1])
+		err = l.AddBaseGroup(strings.Split(strings.Split(l.groupsDN, ",")[0], "=")[1])
 		if err != nil {
 			return err
 		}

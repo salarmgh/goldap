@@ -8,6 +8,37 @@ import (
 	"github.com/go-ldap/ldap/v3"
 )
 
+// AddBaseGroup function
+func (l *LDAP) AddBaseGroup(name string) error {
+	groupDN := fmt.Sprintf("CN=%s,%s", name, l.baseDN)
+	log.Println(groupDN)
+	addReq := ldap.NewAddRequest(groupDN, []ldap.Control{})
+	var attrs []ldap.Attribute
+	attr := ldap.Attribute{
+		Type: "member",
+		Vals: []string{""},
+	}
+	attrs = append(attrs, attr)
+	attr = ldap.Attribute{
+		Type: "objectClass",
+		Vals: []string{"top", "groupOfNames"},
+	}
+	attrs = append(attrs, attr)
+
+	attr = ldap.Attribute{
+		Type: "cn",
+		Vals: []string{groupDN},
+	}
+	attrs = append(attrs, attr)
+
+	addReq.Attributes = attrs
+
+	if err := l.connection.Add(addReq); err != nil {
+		return err
+	}
+	return nil
+}
+
 // AddGroup function
 func (l *LDAP) AddGroup(name string) error {
 	groupDN := fmt.Sprintf("CN=%s,%s", name, l.groupsDN)
