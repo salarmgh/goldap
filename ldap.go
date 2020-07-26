@@ -1,6 +1,7 @@
 package goldap
 
 import (
+	"log"
 	"strings"
 
 	"github.com/go-ldap/ldap/v3"
@@ -34,7 +35,7 @@ func (l *LDAP) GetConn(ldapURL string, bindUser string, bindPass string) error {
 	l.connection = ldapConn
 	usersDNExists, err := l.GroupExists(l.usersDN)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 	if !usersDNExists {
 		err = l.AddGroup(strings.Split(strings.Split(l.usersDN, ",")[0], "=")[1])
@@ -44,7 +45,7 @@ func (l *LDAP) GetConn(ldapURL string, bindUser string, bindPass string) error {
 	}
 	groupsDNExists, err := l.GroupExists(l.groupsDN)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 	if !groupsDNExists {
 		err = l.AddGroup(strings.Split(strings.Split(l.groupsDN, ",")[0], "=")[1])
