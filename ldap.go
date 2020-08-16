@@ -13,18 +13,20 @@ type LDAP struct {
 	baseDN     string
 	usersDN    string
 	groupsDN   string
+	url        string
 }
 
 // Init function
-func (l *LDAP) Init(baseDN string, usersDN string, groupsDN string) {
+func (l *LDAP) Init(url string, baseDN string, usersDN string, groupsDN string) {
+	l.url = url
 	l.baseDN = baseDN
 	l.usersDN = usersDN
 	l.groupsDN = groupsDN
 }
 
 // GetConn function
-func (l *LDAP) GetConn(ldapURL string, bindUser string, bindPass string) error {
-	ldapConn, err := ldap.DialURL(ldapURL)
+func (l *LDAP) GetConn(bindUser string, bindPass string) error {
+	ldapConn, err := ldap.DialURL(l.url)
 	if err != nil {
 		return err
 	}

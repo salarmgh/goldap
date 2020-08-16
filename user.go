@@ -105,7 +105,7 @@ func (l *LDAP) Auth(loginUser string, loginPass string) (bool, error) {
 		return false, fmt.Errorf("Too many entries returned")
 	}
 
-	conn, err := l.NewConn(fmt.Sprintf("ldap://%s:%s", Config.Ldap.Host, Config.Ldap.Port))
+	conn, err := l.NewConn(l.url)
 	if err != nil {
 		return false, err
 	}
